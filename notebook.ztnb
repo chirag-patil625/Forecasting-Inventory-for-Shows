@@ -1,0 +1,371 @@
+notebookId = "760e9f5a-0da2-4637-afc1-9663c4111c0f"
+notebookName = "Zero True"
+
+[cells.5a87433c-cf67-4e27-b87f-f5b8fff7e351]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<h1><strong>Forecasting Inventory for Shows&nbsp;</strong></h1>
+<h3><strong>Introduction</strong></h3>
+<p>This project predicts event remaining capacity using features like days until the event and total availability. We'll preprocess the data, apply log transformation, train a Random Forest model, and evaluate its performance.</p>"""
+
+[cells.36a5b8bc-a4eb-471b-8b85-70852bca0ba6]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p>1. Importing Libraries</p>"""
+
+[cells.2b79ffe5-7611-4330-abe7-58f3241d1aaf]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import joblib
+"""
+
+[cells.83a5528c-9dff-4a8a-a295-9655da59ba66]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<h3><strong>2. Loading Dataset</strong></h3>
+<p>We load the dataset and handle potential errors.</p>"""
+
+[cells.e4176f9a-7cb3-41db-996c-be992bab5203]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+try:
+    df = pd.read_csv('C:/Users/Prath/Desktop/P2/e0318324-c453-47ed-af34-cc1051e07549.csv', low_memory=False)
+    print("Dataset loaded successfully.")
+except Exception as e:
+    print(f"Error loading dataset: {e}")
+"""
+
+[cells.a1fb0559-e43d-4542-a517-4c13d5d809a2]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<h3><strong>3. Data Preprocessing</strong></h3>
+<h4>Convert datetime columns and handle missing data.</h4>"""
+
+[cells.a6533560-88d0-4613-8bed-edbe28f0471f]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+df['total_availability'] = df['availability_standard'] + df['availability_resale']
+df['days_until_event'] = (df['event_date'] - df['timestamp']).dt.days
+df['capacity'] = df['capacity'].fillna(df['capacity'].mean())
+df['total_availability'] = df['total_availability'].fillna(df['total_availability'].mean())
+df = df[(df['capacity'] > 0) & (df['total_availability'] > 0)]
+"""
+
+[cells.b9b0df90-b1a9-4823-931b-5e7caca01e42]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p>Log transformation to stabilize variance.</p>"""
+
+[cells.181409dd-7b6a-4286-8835-38a449bd94e4]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+df['log_remaining_capacity'] = np.log1p(df['capacity'] - df['total_availability'])
+df = df.dropna(subset=['log_remaining_capacity'])
+"""
+
+[cells.be8143ac-5f14-46b6-8634-495211eccb96]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<h3><strong>4. Model Building</strong></h3>
+<h4>Define features and target variable.</h4>"""
+
+[cells.cf9d83cf-7b89-4da4-918e-6dbdeb032541]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+X = df[['days_until_event', 'total_availability', 'capacity']]
+y = df['log_remaining_capacity']
+"""
+
+[cells.ede9f939-ed1c-4c49-957f-50b81396a154]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p>Train-test split and scaling.</p>"""
+
+[cells.0deae43b-67a5-4e4d-a37e-8957bb77adcb]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+scaler = MinMaxScaler(feature_range=(-1, 1))
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)"""
+
+[cells.a7e22644-85b3-493e-b531-6c8c584f47ab]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p>Train Random Forest model.</p>"""
+
+[cells.59fa4c20-9bcb-44fc-a118-8fa638da8fc4]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_reg.fit(X_train_scaled, y_train)
+joblib.dump(rf_reg, 'rf_model.joblib')
+"""
+
+[cells.61b3e268-dfda-43bb-862d-8beeffa5d18e]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<h3><strong>5. Model Evaluation</strong></h3>
+<h4>Make predictions and evaluate performance.</h4>"""
+
+[cells.fe843402-c661-4e9f-a32b-f41dc210d7dc]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+y_pred_rf = rf_reg.predict(X_test_scaled)
+mae_rf = mean_absolute_error(y_test, y_pred_rf)
+mse_rf = mean_squared_error(y_test, y_pred_rf)
+rmse_rf = np.sqrt(mse_rf)
+r2_rf = r2_score(y_test, y_pred_rf)
+print(f"MAE: {mae_rf:.4f}, MSE: {mse_rf:.4f}, RMSE: {rmse_rf:.4f}, R2: {r2_rf:.4f}")
+"""
+
+[cells.3ecf5257-00bf-46c3-982d-67861dea49a7]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p>6. Save Scaler</p>"""
+
+[cells.00e3fef3-f0d7-4b83-bf55-caf145060b7e]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+joblib.dump(scaler, 'scaler.joblib')
+"""
+
+[cells.c886ac71-fde0-41a6-a213-0b6f86279b24]
+cellName = ""
+cellType = "text"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+<p><span style="font-size: 36pt;"><strong>WHOLE CODE AT ONCE<br><span style="font-size: 14pt;">(if above doesn't work/execute for some reason use this)</span><br></strong></span></p>"""
+
+[cells.cd1dbc63-142e-4107-8e4d-efdcd84dc2bb]
+cellName = ""
+cellType = "code"
+hideCell = "False"
+hideCode = "False"
+expandCode = "False"
+showTable = "False"
+nonReactive = "False"
+code = """
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import joblib  # To save and load models
+
+# Load the dataset with specific data types or suppress dtype warning
+try:
+    df = pd.read_csv('C:/Users/Prath/Desktop/P2/e0318324-c453-47ed-af34-cc1051e07549.csv', low_memory=False)
+    print("Dataset loaded successfully.")
+except Exception as e:
+    print(f"An error occurred while loading the dataset: {e}")
+
+# Data Preprocessing
+# Ensure proper datetime conversion, handle errors by coercing invalid formats
+df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y_%m_%dT%H_%M_%S', errors='coerce')
+df['event_date'] = pd.to_datetime(df['event_date'], errors='coerce')
+
+# Drop rows with NaT in timestamp or event_date
+df = df.dropna(subset=['timestamp', 'event_date'])
+
+# Check if both columns are tz-aware or naive
+if df['timestamp'].dt.tz is not None and df['event_date'].dt.tz is None:
+    df['event_date'] = df['event_date'].dt.tz_localize('UTC')  # Make event_date tz-aware
+elif df['timestamp'].dt.tz is None and df['event_date'].dt.tz is not None:
+    df['timestamp'] = df['timestamp'].dt.tz_localize('UTC')  # Make timestamp tz-aware
+
+# If both are tz-aware, ensure they are in the same timezone
+if df['timestamp'].dt.tz is not None and df['event_date'].dt.tz is not None:
+    df['event_date'] = df['event_date'].dt.tz_convert(df['timestamp'].dt.tz)  # Convert to same timezone
+
+# Calculate additional columns
+df['total_availability'] = df['availability_standard'] + df['availability_resale']
+df['days_until_event'] = (df['event_date'] - df['timestamp']).dt.days
+
+# Fill missing values
+df['capacity'] = df['capacity'].fillna(df['capacity'].mean())
+df['total_availability'] = df['total_availability'].fillna(df['total_availability'].mean())
+
+# Remove rows where capacity or total_availability is zero or negative
+df = df[(df['capacity'] > 0) & (df['total_availability'] > 0)]
+df.dropna(subset=['capacity', 'total_availability'], inplace=True)
+
+# Ensure that we're not taking the log of a negative value
+valid_capacity = df['capacity'] - df['total_availability'] > -1
+df = df[valid_capacity]
+
+# Log transformation
+df['log_remaining_capacity'] = np.log1p(df['capacity'] - df['total_availability'])
+
+# Check for NaN values in log transformation and drop if necessary
+df = df.dropna(subset=['log_remaining_capacity'])
+
+# Verify columns before proceeding
+print("Available columns after preprocessing:", df.columns)
+
+# Features and Target Variable
+X = df[['days_until_event', 'total_availability', 'capacity']]
+y = df['log_remaining_capacity']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Feature Scaling
+scaler = MinMaxScaler(feature_range=(-1, 1))
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Model Selection
+rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_reg.fit(X_train_scaled, y_train)
+
+# Save the trained model
+model_filename = 'rf_model.joblib'
+joblib.dump(rf_reg, model_filename)
+print(f"Model saved to {model_filename}")
+
+# Make predictions
+y_pred_rf = rf_reg.predict(X_test_scaled)
+
+# Evaluate the Random Forest Model
+mae_rf = mean_absolute_error(y_test, y_pred_rf)
+mse_rf = mean_squared_error(y_test, y_pred_rf)
+rmse_rf = np.sqrt(mse_rf)
+r2_rf = r2_score(y_test, y_pred_rf)
+
+print("
+Random Forest Regression - Evaluation Metrics")
+print(f"MAE: {mae_rf:.4f}, MSE: {mse_rf:.4f}, RMSE: {rmse_rf:.4f}, R2: {r2_rf:.4f}")
+
+# Save the scaler
+joblib.dump(scaler, 'scaler.joblib')
+print("Scaler saved successfully.")"""
+

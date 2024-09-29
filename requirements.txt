@@ -1,0 +1,8 @@
+zero-true==0.4.3
+pandas
+numpy
+seaborn
+matplotlib
+scikit-learn
+joblib
+flask
